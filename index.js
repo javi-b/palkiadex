@@ -589,7 +589,7 @@ function LoadPokemon(clean_input, form = "def", mega = false,
     // sets the page title
     const pokemon_name = jb_names[pokemon_id].name;
     document.title = "#" + pokemon_id + " " + pokemon_name
-            + " - Palkia's Pokédex";
+            + " - Palkédex";
 
     // sets the default form
     if (form == "def")
@@ -2117,7 +2117,7 @@ function LoadStrongest(type = null) {
         title = "Strongest Pokémon of " + type + " type";
     else
         title = "Strongest Pokémon of each type";
-    document.title = title + " - Palkia's Pokédex"; // page title
+    document.title = title + " - Palkédex"; // page title
     $("#strongest-title").text(title); // table title
 
     // removes previous table rows
