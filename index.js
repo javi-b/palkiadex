@@ -860,10 +860,15 @@ function LoadPokemongo(pokemon_id, form, mega, mega_y, level, ivs) {
 }
 
 /**
- * Gets the Pokemon GO stats of a specific pokemon when it is level 40
- * and it has some specific IV points.
+ * Gets the Pokemon GO stats of a specific pokemon. If level or ivs aren't
+ * specified, they default to the settings level and the maximum ivs.
  */
-function GetPokemonStats(jb_pkm_obj, mega, mega_y, level, ivs) {
+function GetPokemonStats(jb_pkm_obj, mega, mega_y, level = null, ivs = null) {
+
+    if (!level)
+        level = settings_default_level;
+    if (!ivs)
+        ivs = { atk: 15, def: 15, hp: 15 };
 
     let stats;
 
@@ -881,17 +886,6 @@ function GetPokemonStats(jb_pkm_obj, mega, mega_y, level, ivs) {
     stats.hp = (stats.baseStamina + ivs.hp) * cpm;
 
     return {...stats}; // returns by copy to prevent reassignment of reference
-}
-
-/**
- * Gets the Pokemon GO stats of a specific pokemon when it is the level set by
- * the settings and it has the maximum IV points.
- */
-function GetMaxStats(jb_pkm_obj, mega, mega_y) {
-
-    const ivs = { atk: 15, def: 15, hp: 15 };
-    return GetPokemonStats(jb_pkm_obj, mega, mega_y,
-            settings_default_level, ivs);
 }
 
 /**
@@ -1275,7 +1269,7 @@ function GetPokemonStrongestMovesetsAgainstEnemy(jb_pkm_obj, mega, mega_y, shado
     // subject data
     const types = GetPokemonTypes(jb_pkm_obj, mega, mega_y);
     const effectiveness = GetTypesEffectivenessAgainstTypes(types);
-    const stats = GetMaxStats(jb_pkm_obj, mega, mega_y);
+    const stats = GetPokemonStats(jb_pkm_obj, mega, mega_y);
     const atk = (shadow) ? (stats.atk * 6 / 5) : stats.atk;
     const def = (shadow) ? (stats.def * 5 / 6) : stats.def;
     const hp = stats.hp;
@@ -1291,7 +1285,7 @@ function GetPokemonStrongestMovesetsAgainstEnemy(jb_pkm_obj, mega, mega_y, shado
 
     // enemy data
     let avg_y = null;
-    const enemy_stats = GetMaxStats(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y);
+    const enemy_stats = GetPokemonStats(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y);
     const enemy_moves = GetPokemongoMoves(enemy_jb_pkm_obj);
     if (enemy_moves.length == 4) {
         const enemy_fms = enemy_moves[0];
@@ -1596,8 +1590,8 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats) {
     const hp = stats.hp;
 
     // shadow stats
-    let atk_sh = atk * 6 / 5;
-    let def_sh = def * 5 / 6;
+    const atk_sh = atk * 6 / 5;
+    const def_sh = def * 5 / 6;
 
     // removes previous table rows
     $("#pokemongo-table tr:not(.table-header)").remove();
@@ -2426,7 +2420,7 @@ function GetPokemonStrongestMovesets(jb_pkm_obj, mega, mega_y, shadow,
 
     const types = GetPokemonTypes(jb_pkm_obj, mega, mega_y);
 
-    const stats = GetMaxStats(jb_pkm_obj, mega, mega_y);
+    const stats = GetPokemonStats(jb_pkm_obj, mega, mega_y);
     const atk = (shadow) ? (stats.atk * 6 / 5) : stats.atk;
     const def = (shadow) ? (stats.def * 5 / 6) : stats.def;
     const hp = stats.hp;
