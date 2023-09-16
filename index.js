@@ -851,12 +851,16 @@ function LoadPokemongo(pokemon_id, form, mega, mega_y, level, ivs) {
         $("#legend").css("display", "initial");
 
     const stats = GetPokemonStats(jb_pkm_obj, mega, mega_y, level, ivs);
+    let max_stats = null;
+    if (ivs.atk != 15 || ivs.def != 15 || ivs.hp != 15)
+        max_stats = GetPokemonStats(jb_pkm_obj, mega, mega_y, level);
+
     LoadPokemongoBaseStats(stats);
     LoadPokemongoCP(stats);
     UpdatePokemongoCPText(level, ivs);
     LoadPokemongoEffectiveness(jb_pkm_obj, mega, mega_y);
     LoadPokemongoCounters(jb_pkm_obj, mega, mega_y);
-    LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats);
+    LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats);
 }
 
 /**
@@ -970,8 +974,9 @@ function LoadPokemongoCP(stats) {
 function UpdatePokemongoCPText(level, ivs) {
 
     const pct = Math.round(100 * (ivs.atk + ivs.def + ivs.hp) / 45);
-    $("#cp-text").text("with IVs " + ivs.atk + "/" + ivs.def + "/" + ivs.hp
-            + " (" + pct + "%) at level " + level);
+    $("#cp-text").html("with IVs " + ivs.atk + "/" + ivs.def + "/" + ivs.hp
+            + " (" + pct + "%) at level " + level
+            + "<span id=rat-pct-vs-max></span>");
 }
 
 /**
@@ -1573,8 +1578,12 @@ function ShowCountersPopup(hover_element, show, counter = null) {
 /**
  * Loads the table in the Pokemon Go section including information about
  * the possible move combinations and their ratings.
+ * 
+ * If the argument 'max_stats' is received, also calculates the average rating
+ * percentage of the specific stats against the max stats (15/15/15 ivs)
+ * of all movesets. This percentage is then displayed on the CP section.
  */
-function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats) {
+function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats = null) {
 
     // sets movesets title
     $("#movesets-title").html("<b>" + jb_pkm_obj.name + "'s movesets</b>");
@@ -1607,6 +1616,10 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats) {
 
     const all_fms = fms.concat(elite_fms);
     const all_cms = cms.concat(elite_cms);
+
+    // variables used to calculate average rating percentage against max stats
+    let rat_pcts_vs_max = 0;
+    let num_movesets = 0;
 
     // appends new table rows asynchronously (so that Mew loads fast)
     // each chunk of moves combinations with a specific fast move
@@ -1668,6 +1681,27 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats) {
                 rat_sh = Math.pow(dps_sh, 0.85) * Math.pow(tdo_sh, 0.15);
             }
 
+            // if necessary, calculates rating value of max stats, to be able to
+            // calculate the rating percent of specific stats against them 
+            if (max_stats) {
+                const max_dps = GetDPS(types, max_stats.atk, max_stats.def,
+                    max_stats.hp, fm_obj, cm_obj);
+                const max_tdo = GetTDO(max_dps, max_stats.hp, max_stats.def);
+                // metrics from Reddit user u/Elastic_Space
+                let max_rat = 0;
+                if (settings_metric == "ER") {
+                    const max_dps3tdo = Math.pow(max_dps, 3) * max_tdo;
+                    max_rat = Math.pow(max_dps3tdo, 1/4);
+                } else if (settings_metric == "EER") {
+                    max_rat = Math.pow(max_dps, 0.775) * Math.pow(max_tdo, 0.225);
+                } else if (settings_metric == "TER") {
+                    max_rat = Math.pow(max_dps, 0.85) * Math.pow(max_tdo, 0.15);
+                }
+
+                rat_pcts_vs_max += rat / max_rat;
+                num_movesets++;
+            }
+
             // creates one row
 
             const tr = $("<tr></tr>");
@@ -1700,6 +1734,16 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats) {
             tr.append(td_rat_sh);
 
             $("#pokemongo-table").append(tr);
+        }
+
+        // if necessary, calculates average rating percentage of specific stats
+        // against max stats of all movesets and displays it on the CP section
+        if (max_stats) {
+            let avg_rat_pct_vs_max = 100 * rat_pcts_vs_max / num_movesets;
+            let pct_str = avg_rat_pct_vs_max.toFixed(0) + "%";
+            if (isNaN(avg_rat_pct_vs_max))
+                pct_str = "??";
+            $("#rat-pct-vs-max").text(" → " + settings_metric + " " + pct_str);
         }
 
         // appends the next fast move chunk, if there is more
