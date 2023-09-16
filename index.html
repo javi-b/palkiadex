@@ -1,0 +1,247 @@
+<!DOCTYPE HTML>
+<html>
+
+<head>
+    <meta charset=UTF-8>
+    <title>Palkia's Pokédex</title>
+    <link rel="icon" type="image/ico" href="favicon.ico"/>
+    <link rel="stylesheet" href="style_general.css">
+    <link rel="stylesheet" href="style.css">
+    <script src=jquery-3.6.0.min.js></script>
+    <script src=pokemon_utils.js></script>
+    <script src=index.js></script>
+</head>
+
+<body>
+<div id=loading-bar-c><div id=loading-bar></div></div>
+<div id=site>
+
+    <div id=settings-c>
+        <div id=settings class=small-text>
+            <p class=center><b>Settings</b> <span id=settings-hide class=unselectable>[show]</span></p>
+            <div id=settings-list class=invisible>
+                <ul>
+                    <li id=settings-metric>PvE metric →
+                        <span id=metric-er class="settings-opt unselectable">ER</span>
+                        <span id=metric-eer class="settings-opt settings-opt-sel unselectable">EER</span>
+                        <span id=metric-ter class="settings-opt unselectable">TER</span></li>
+                    <li id=settings-lvl>Default level →
+                        <span id=lvl-40 class="settings-opt settings-opt-sel unselectable">40</span>
+                        <span id=lvl-50 class="settings-opt unselectable">50</span></li>
+                    <!--<li>Pkm sprites → 3DS POGO</li>-->
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div id=header>
+    </div>
+
+    <!-- search bar and strongest button -->
+    <div class=center>
+        <div id=strongest-button-c><p id=strongest-button class="small-text off">or see the <a id=strongest-link href=#>strongest of each type</a></p></div>
+        <p class="center small-text off no-top-m">search a Pokémon name or id...</p>
+        <form autocomplete=off>
+            <input id=input type=text>
+        </form>
+        <div id=suggestions-c><div id=suggestions class=small-text></div></div>
+    </div>
+
+    <br><br>
+
+    <!-- pokedex -->
+    <div class=center id=pokedex>
+        <div id=containers-father>
+            <div class=pokemon-containers id=previous-containers></div>
+            <div class=pokemon-containers id=main-container></div>
+            <div class=pokemon-containers id=next-containers></div>
+        </div>
+        <div class=pokemon-containers id=additional-containers></div>
+    </div>
+
+    <!-- pokemon go stats and moves table -->
+    <div id=pokemongo>
+        <div id=not-released>
+            <br>
+            <p class="center">Not found in the <b>Pokémon GO</b> files yet :(</p>
+        </div>
+        <div id=released>
+            <table id=base-stats class="center small-text">
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td><abbr title="Base stats of this Pokémon species">Base</abbr></td>
+                    <td>→</td>
+                    <td id=base-stat-atk>atk</td>
+                    <td id=base-stat-def>def</td>
+                    <td id=base-stat-hp>hp</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            </table>
+            <form id=stats-form>
+            <table class="center small-text">
+                <tr>
+                    <td></td>
+                    <td><abbr title="Level of this specific Pokémon">Level</abbr></td>
+                    <td>→</td>
+                    <td><label>
+                        <input id=input-lvl type=number min=1 max=51 step=0.5 value=40></label></td>
+                    </label></td>
+                    <td></td>
+                    <td>
+                        <abbr title="Individual Values of this specific Pokémon (added to the base stats)">IVs</abbr>
+                    </td>
+                    <td>→</td>
+                    <td><label>
+                        atk <input id=input-atk type=number min=0 max=15 value=15>
+                    </label></td>
+                    <td><label>
+                        def <input id=input-def type=number min=0 max=15 value=15>
+                    </label></td>
+                    <td><label>
+                        hp <input id=input-hp type=number min=0 max=15 value=15>
+                    </label></td>
+                    <td><label>
+                        <input type=submit value=reload />
+                    </label></td>
+                    <td></td>
+                </tr>
+            </table>
+            </form>
+            <br>
+            <p class="center no-top-m no-bottom-m">
+                <span id=max-cp-div><span id=max-cp></span></span>
+                <span class=prgr><span class=prgr-val></span></span><br>
+                <span id=cp-text class="small-text off"></span>
+            </p>
+            <br>
+            <div class="small-text" id=effectiveness>
+                <table>
+                    <tr>
+                        <td rowspan="4" id="effectiveness-title"></td>
+                        <td>2.56x</td>
+                        <td id="effectiveness-256"></td>
+                        <td rowspan="4" class="off">← click type to see the strongest of that type</td>
+                    </tr>
+                    <tr>
+                        <td>1.60x</td>
+                        <td id="effectiveness-160"></td>
+                    </tr>
+                    <tr>
+                        <td class="red">0.625x</td>
+                        <td id="effectiveness-0625"></td>
+                    </tr>
+                    <tr>
+                        <td class="red">0.391x</td>
+                        <td id="effectiveness-0391"></td>
+                    </tr>
+                </table>
+            </div>
+            <p class="center no-bottom-m"><button id=counters-button onclick=ShowCounters()></button></p>
+            <div class="small-text" id="counters">
+                <div class=center id=counters-popup></div>
+                <table><tr id=counters-tr></tr></table>
+                <p class="center off no-top-m" id=counters-disclaimer></p>
+            </div>
+            <p class="center" id="movesets-title"></p>
+            <table class=table-bg id=pokemongo-table>
+                <tr class=table-header>
+                    <th>Fast<br>Move</th>
+                    <th>Charged<br>Move</th>
+                    <th>DPS</th>
+                    <th>DPS<br>(Shadow)</th>
+                    <th>TDO</th>
+                    <th>TDO<br>(Shadow)</th>
+                    <th id=table-metric-header class=sortable onclick=SortPokemongoTable(6)>
+                        EER <span class=th-triangle>▿</span>
+                    </th>
+                    <th id=table-metric-header-sh>EER<br>(Shadow)</th>
+                </tr>
+            </table>
+            <p class="small-text no-top-m">* elite fast or charged move</p>
+        </div> <!-- end of 'released' div -->
+    </div> <!-- end of 'pokemongo' div -->
+
+    <!-- strongest pokemon section -->
+    <div id=strongest>
+        <p class="center small-text off no-bottom-m">select what type's strongest Pokémon you want to see</p>
+        <div id=strongest-links class="small-text unselectable">
+            <ul>
+                <li><a class="type-text bg-any-type" onclick="LoadStrongestAndUpdateURL()">Each type</a></li>
+            </ul>
+            <ul id=strongest-links-types></ul>
+        </div>
+        <br>
+        <div class=center id=strongest-header>
+            <b id=strongest-title></b><br>
+            <span class=small-text id=strongest-filters>
+                <input type=checkbox value=unreleased unchecked>
+                    Unreleased
+                </input>
+                <input type=checkbox value=mega checked>
+                    Mega and Primal
+                </input>
+                <input type=checkbox value=shadow checked>
+                    Shadow
+                </input>
+                <input type=checkbox value=legendary checked>
+                    Legendary, Mythical and Ultrabeast
+                </input>
+                <input type=checkbox value=elite checked>
+                    Elite moves
+                </input>
+            </span>
+        </div>
+        <table class="table-bg center" id=strongest-table></table>
+        <p class="small-text no-top-m">* elite fast or charged move</p>
+    </div> <!-- end of 'strongest' div -->
+
+    <!-- technical information legend and sources, and footer -->
+    <div id=legend>
+
+        <!-- technical information legend and sources -->
+        <div class="row small-text">
+            <div class=column-l>
+                <p class=no-bottom-m>Legend:</p>
+                <ul class=no-top-m>
+                    <li><b>DPS</b>: Damage Per Second that a Pokémon with a specific moveset deals against a <i>reference</i> Pokémon. (How fast a Pokémon deals damage).</li>
+                    <li><b>TDO</b>: Total Damage Output from a Pokémon with a specific moveset against a <i>reference</i> Pokémon until the attacking Mon faints. (This metric gives more value to the <i>bulk</i>).</li>
+                    <li><b>ER</b>: Equivalent Rating. Overall metric for PvE - a balance between DPS and TDO. <span class=red><i>deprecated since the introduction of EER and TER</i></span></li>
+                    <li><b>EER</b>: Estimator Equivalent Rating. More realistic metric, for when short-manning or expecting to relobby.</li>
+                    <li><b>TER</b>: Time Equivalent Rating. More realistic metric, for when raiding in a large group and not going to relobby.</li>
+                </ul>
+            </div>
+            <div class=column-r>
+                <p class=no-bottom-m>Sources:</p>
+                <ol class="no-top-m left">
+                    <li><a target=blank href=https://gamepress.gg/pokemongo/damage-mechanics>GamePress. Damage Mechanics</a></li>
+                    <li><a target=blank href=https://gamepress.gg/pokemongo/how-calculate-comprehensive-dps>GamePress. How to Calculate Comprehensive DPS</a></li>
+                    <li><a target=blank href=https://www.reddit.com/r/TheSilphRoad/comments/z3xuzc/analysis_legendarymythical_signature_moves/>r/TheSliphRoad. u/Elastic_Space. [Analysis] Legendary/Mythical Signature Moves: Improving the GamePress Overall Metric and a Cross-type PvE Meta Overview</a></li>
+                    <li><a target=blank href=https://www.reddit.com/r/TheSilphRoad/comments/135nz6o/analysis_improving_pve_overall_theoretical_metric/>r/TheSliphRoad. u/Elastic_Space. [Analysis] Improving PvE Overall Theoretical Metric: Modification to Equivalent Rating (ER)</a></li>
+                </ol>
+                <p class=no-bottom-m>Credits:</p>
+                <ul class=no-top-m>
+                    <li>Thanks to <a target=blank href=https://pokeminers.com/>PokeMiners</a> for providing the PoGo data.</li>
+                    <li>Thanks to <a target=blank href=https://gamepress.gg/pokemongo/>GamePress</a> and Reddit user <a target=blank href=https://www.reddit.com/user/Elastic_Space/>u/Elastic_Space</a> for their theoretical work and analyses.</li>
+                </ul>
+            </div>
+        </div> <!-- end of 'row' div -->
+
+        <!-- footer -->
+        <div id=footer class="small-text center">
+            <p><b>for comments or feedback</b><br>javibonafonte [at] gmail [dot] com<br><a target=blank href=https://twitter.com/0a211212>@0a211212</a> on twitter</p>
+            <p><b>my personal site</b><br><a href=/>javibonafonte.com</a></p>
+            <p>if you <b>really</b> want to contribute you can buy me a coffee :) thanks a lot!<br>with <b>bitcoin</b>: 1PCSaTBZWfYrEZjWM4iFMWhaxFewEKXDTM<br>or with <b>normal money</b>: <a target=blank href=https://ko-fi.com/javibonafonte>Ko-fi.com</a></p>
+        </div> <!-- end of 'footer' div -->
+
+    </div> <!-- end of 'legend' div -->
+
+</div>
+</body>
+
+</html>
+
