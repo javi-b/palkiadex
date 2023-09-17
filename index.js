@@ -1740,7 +1740,7 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats = null) {
         // against max stats of all movesets and displays it on the CP section
         if (max_stats) {
             let avg_rat_pct_vs_max = 100 * rat_pcts_vs_max / num_movesets;
-            let pct_str = avg_rat_pct_vs_max.toFixed(0) + "%";
+            let pct_str = avg_rat_pct_vs_max.toFixed(2) + "%";
             if (isNaN(avg_rat_pct_vs_max))
                 pct_str = "??";
             $("#rat-pct-vs-max").text(" → " + settings_metric + " " + pct_str);
