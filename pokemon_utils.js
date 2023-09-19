@@ -589,9 +589,6 @@ function GetPokemonImgSrcName(pokemon_id, clean_name, form, mega, mega_y) {
             case "East_sea":
                 img_src_name += "-east";
                 break;
-            case "Female":
-                img_src_name += "-f";
-                break;
             case "Ten_percent":
                 img_src_name += "-10";
                 break;
