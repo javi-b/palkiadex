@@ -547,6 +547,8 @@ function GetPokemonForms(pokemon_id) {
             return [ "Single_strike", "Rapid_strike" ];
         case 898: // Calyrex
             return [ "Normal", "Ice_rider", "Shadow_rider" ];
+        case 916: // Oinkologne
+            return [ "Normal", "Female" ];
         default:
             return [ "Normal" ];
     }
