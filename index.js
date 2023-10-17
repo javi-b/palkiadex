@@ -766,7 +766,12 @@ function GetPokemonContainer(pokemon_id, is_selected, form = "Normal",
     const clean_name = Clean(pokemon_name);
     const img_src_name = GetPokemonImgSrcName(pokemon_id, clean_name, form,
             mega, mega_y);
-    const img_src = GIFS_URL + img_src_name + ".gif";
+    const is_pogo_png = (pokemon_id >= 899);
+    let img_src;
+    if (is_pogo_png)
+        img_src = POGO_PNGS_URL + img_src_name + ".png";
+    else
+        img_src = GIFS_URL + img_src_name + ".gif";
     const can_be_mega_y = pokemon_id == 6 || pokemon_id == 150; 
     const primal = mega && (pokemon_id == 382 || pokemon_id == 383);
     const form_text = GetFormText(pokemon_id, form);
@@ -793,10 +798,15 @@ function GetPokemonContainer(pokemon_id, is_selected, form = "Normal",
         img_container_div.css("border", "1px solid var(--col-main)");
     img_container_div.append(
             $("<img class=loading src=imgs/loading.gif></img>"));
-    img_container_div.append($("<img class=pokemon-img "
+    let pokemon_img = $($("<img class=pokemon-img "
             + "onload ='HideLoading(this)' onerror='TryNextSrc(this)'"
             + " onclick='SwapShiny(this)' src="
             + img_src + "></img>"));
+    if (is_pogo_png) {
+        pokemon_img.css("width", "140px");
+        pokemon_img.css("height", "140px");
+    }
+    img_container_div.append(pokemon_img);
     pokemon_container_div.append(img_container_div);
 
     // pokemon name p
@@ -1492,8 +1502,17 @@ function ProcessAndSetCountersFromArrays(counters, mega_counters) {
         let img = $("<img onload='HideLoading(this)' onerror='TryNextSrc(this)'></img>");
         let img_src_name = GetPokemonImgSrcName(counter_0.id, Clean(counter_0.name),
                 counter_0.form, counter_0.mega, counter_0.mega_y);
-        let img_src = GIFS_URL + img_src_name + ".gif";
+        const is_pogo_png = (counter_0.id >= 899);
+        let img_src;
+        if (is_pogo_png)
+            img_src = POGO_PNGS_URL + img_src_name + ".png";
+        else
+            img_src = GIFS_URL + img_src_name + ".gif";
         img.attr("src", img_src);
+        if (is_pogo_png) {
+            img.css("width", "140px");
+            img.css("height", "140px");
+        }
         let td = $("<td></td>");
 
         // sets table cell and appends it to the row
