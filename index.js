@@ -1571,9 +1571,10 @@ function ShowCountersPopup(hover_element, show, counter = null) {
 
         $("#counters-popup").html("<span>" + name
             + "<br><span class='type-text bg-" + counter.fm_type + "'>"
-            + counter.fm
+            + counter.fm + ((counter.fm_is_elite) ? "*" : "")
             + "</span> <span class='type-text bg-" + counter.cm_type + "'>"
-            + counter.cm + "</span></span>");
+            + counter.cm + ((counter.cm_is_elite) ? "*" : "")
+            + "</span></span>");
 
         // sets popup's click callback for touch devices
         if (has_touch_screen) {
