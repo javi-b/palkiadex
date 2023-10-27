@@ -54,6 +54,8 @@ METRICS.add("TER");
 let settings_metric = "EER";
 let settings_default_level = 40;
 
+// global variables
+
 // FIXME these are not ideal, would be better that, if a new pokemon is loaded,
 //        whatever asynchronous operations were being done on the previous mon
 //        should be cancelled
@@ -65,6 +67,13 @@ let loading_counters = false;
 
 // search input selected suggestion index
 let selected_suggestion_i = -1;
+
+let current_jb_pkm_obj = null; // current pokemon's jb_pkm_obj
+let current_mega = false; // whether current pokemon is a mega
+let current_mega_y = false; // whether current pokemon is a mega y
+
+// whether counters of current pokemon have been loaded yet
+let counters_loaded = false;
 
 /**
  * Main function.
@@ -865,11 +874,17 @@ function LoadPokemongo(pokemon_id, form, mega, mega_y, level, ivs) {
     if (ivs.atk != 15 || ivs.def != 15 || ivs.hp != 15)
         max_stats = GetPokemonStats(jb_pkm_obj, mega, mega_y, level);
 
+    // sets global variables
+    current_jb_pkm_obj = jb_pkm_obj;
+    current_mega = mega;
+    current_mega_y = mega_y;
+    counters_loaded = false;
+
     LoadPokemongoBaseStats(stats);
     LoadPokemongoCP(stats);
     UpdatePokemongoCPText(level, ivs);
     LoadPokemongoEffectiveness(jb_pkm_obj, mega, mega_y);
-    LoadPokemongoCounters(jb_pkm_obj, mega, mega_y);
+    ResetPokemongoCounters(jb_pkm_obj);
     LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats);
 }
 
@@ -1067,14 +1082,11 @@ function LoadPokemongoEffectiveness(jb_pkm_obj, mega, mega_y) {
 }
 
 /**
- * Loads best counters of selected pokemon.
- * Searches asynchronously through all the pokemon in the game and calculates
- * the best counters taking into account their effectiveness against the selected
- * mon and their resistance to the average of the selected mon's movesets.
+ * Resets the pokemon go counters section for the current selected pokemon.
  */
-function LoadPokemongoCounters(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y) {
+function ResetPokemongoCounters(enemy_jb_pkm_obj) {
 
-    // sets counters title and disclaimer
+    // sets proper counters title and disclaimer
     const verb = ($("#counters").css("display") == "none") ? "show" : "hide";
     $("#counters-button").html(verb + " <b>" + enemy_jb_pkm_obj.name + "</b>'s counters")
     $("#counters-disclaimer").html(
@@ -1082,6 +1094,23 @@ function LoadPokemongoCounters(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y) {
         + enemy_jb_pkm_obj.name
         + "<br>and the counters resistance to the average of "
         + enemy_jb_pkm_obj.name + "'s movesets");
+    
+    // shows cell with loading image in the counters table
+    $("#counters-tr").empty();
+    let td = $("<td></td>");
+    let img = $("<img class=loading src=imgs/loading.gif></img>");
+    td.append(img);
+    td.css("height", "125px");
+    $("#counters-tr").append(td);
+}
+
+/**
+ * Loads best counters of selected pokemon.
+ * Searches asynchronously through all the pokemon in the game and calculates
+ * the best counters taking into account their effectiveness against the selected
+ * mon and their resistance to the average of the selected mon's movesets.
+ */
+function LoadPokemongoCounters(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y) {
 
     const enemy_types = GetPokemonTypes(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y);
     const enemy_effectiveness = GetTypesEffectivenessAgainstTypes(enemy_types);
@@ -1250,10 +1279,12 @@ function LoadPokemongoCounters(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y) {
 
     loading_counters = true;
     // searches for the first chunk of pokemon
-    SearchOneChunkOfPokemon(0, function () {
-        ProcessAndSetCountersFromArrays(counters, mega_counters);
-        loading_counters = false;
-    });
+    setTimeout(function() {
+        SearchOneChunkOfPokemon(0, function () {
+            ProcessAndSetCountersFromArrays(counters, mega_counters);
+            loading_counters = false;
+        });
+    }, 0);
 }
 
 /**
@@ -2107,6 +2138,9 @@ function UpdatePokemonStatsAndURL() {
  * Callback function for when the 'show counters' or 'hide counters' button is
  * clicked.
  * It either shows or hides the counters, depending on whether they are visible.
+ * 
+ * It also loads the counters if they haven't been loaded for the current
+ * selected pokemon yet.
  */
 function ShowCounters() {
 
@@ -2120,6 +2154,12 @@ function ShowCounters() {
     } else {
         $("#counters").css("display", "none");
         $("#counters-button").html(html.replace("hide ", "show "));
+    }
+
+    // if counters haven't been loaded for the current pokemon, loads them
+    if (!counters_loaded) {
+        counters_loaded = true;
+        LoadPokemongoCounters(current_jb_pkm_obj, current_mega, current_mega_y);
     }
 }
 
