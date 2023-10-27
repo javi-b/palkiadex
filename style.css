@@ -458,6 +458,12 @@ button:focus {
 
 #counters { display: none; }
 
+#counters-outline {
+    border: 1px solid var(--col-off);
+    border-radius: var(--border-radius);
+    background: WhiteSmoke;
+}
+
 #counters table {
     margin: 0 auto;
     width: 85%;
@@ -495,6 +501,10 @@ button:focus {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+}
+
+#counters-legend {
+    background-color: var(--col-so-off);
 }
 
 #pokemongo-table {

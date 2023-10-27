@@ -121,6 +121,13 @@ function Main() {
         return false;
     });
 
+    $("#counters :checkbox").change(function() {
+        if (current_jb_pkm_obj) {
+            ResetPokemongoCounters(current_jb_pkm_obj);
+            LoadPokemongoCounters(current_jb_pkm_obj, current_mega, current_mega_y);
+        }
+    });
+
     $("#strongest-link").click(function() {
         LoadStrongestAndUpdateURL();
         return false;
@@ -1115,12 +1122,17 @@ function LoadPokemongoCounters(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y) {
     const enemy_types = GetPokemonTypes(enemy_jb_pkm_obj, enemy_mega, enemy_mega_y);
     const enemy_effectiveness = GetTypesEffectivenessAgainstTypes(enemy_types);
 
-    // TODO for now, filters are hardcoded, not accessible to the user
-    const search_unreleased = false;
-    const search_mega = true;
-    const search_shadow = true;
-    const search_legendary = true;
-    const search_elite = true;
+    // gets checkboxes filters
+    let search_unreleased =
+        $("#counters input[value='unreleased']:checkbox").is(":checked");
+    let search_mega =
+        $("#counters input[value='mega']:checkbox").is(":checked");
+    let search_shadow =
+        $("#counters input[value='shadow']:checkbox").is(":checked");
+    let search_legendary =
+        $("#counters input[value='legendary']:checkbox").is(":checked");
+    let search_elite =
+        $("#counters input[value='elite']:checkbox").is(":checked");
 
     const num_counters = 6;
     const num_mega_counters = 5;

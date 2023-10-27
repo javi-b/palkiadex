@@ -143,9 +143,30 @@
             </div>
             <p class="center no-bottom-m"><button id=counters-button onclick=ShowCounters()></button></p>
             <div class="small-text" id="counters">
+            <div id="counters-outline">
                 <div class=center id=counters-popup></div>
+                <div class="center">
+                    <p id=counters-filters>
+                        <input type=checkbox value=unreleased unchecked>
+                            Unreleased
+                        </input>
+                        <input type=checkbox value=mega checked disabled>
+                            Mega and Primal
+                        </input>
+                        <input type=checkbox value=shadow checked>
+                            Shadow
+                        </input>
+                        <input type=checkbox value=legendary checked>
+                            Legendary, Mythical and Ultrabeast
+                        </input>
+                        <input type=checkbox value=elite checked>
+                            Elite moves
+                        </input>
+                    </p>
+                </div>
                 <table><tr id=counters-tr></tr></table>
                 <p class="center off no-top-m" id=counters-disclaimer></p>
+            </div>
             </div>
             <p class="center" id="movesets-title"></p>
             <table class=table-bg id=pokemongo-table>
