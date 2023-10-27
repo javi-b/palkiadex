@@ -1464,7 +1464,6 @@ function ProcessAndSetCountersFromArrays(counters, mega_counters) {
     // sets counters in the page
 
     $("#counters-tr").empty();
-    $("#mega-counters-tr").empty();
 
     for (let i = 0; i < all_counters.length; i++) { // for each counter...
 
