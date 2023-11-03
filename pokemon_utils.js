@@ -442,7 +442,7 @@ function GetPokemonForms(pokemon_id) {
         case 724: // Decidueye
             return [ "Normal", "Hisuian" ];
         case 194: // Wooper
-            return ["Normal", "Paldean"];
+            return ["Normal", "Paldea"];
         case 351: // Castform
             return [ "Normal", "Sunny", "Rainy", "Snowy" ];
         case 386: // Deoxys
@@ -662,13 +662,14 @@ function GetFormText(pokemon_id, form) {
             break;
         case "Alola":
             return "Alolan Form";
+        case "Paldea":
+            return "Paldean Form";
         case "Plant":
         case "Sandy":
         case "Trash":
             return form + " Cloak";
         case "Galarian":
         case "Hisuian":
-        case "Paldean":
         case "Rainy":
         case "Snowy":
         case "Overcast":
