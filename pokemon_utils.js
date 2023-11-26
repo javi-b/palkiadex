@@ -549,6 +549,8 @@ function GetPokemonForms(pokemon_id) {
             return [ "Single_strike", "Rapid_strike" ];
         case 898: // Calyrex
             return [ "Normal", "Ice_rider", "Shadow_rider" ];
+        case 902: // Basculegion
+            return [ "Normal", "Female" ];
         case 916: // Oinkologne
             return [ "Normal", "Female" ];
         default:
@@ -651,6 +653,8 @@ function GetFormText(pokemon_id, form) {
                 case 593: // Jellicent
                 case 678: // Meowstic
                 case 668: // Pyroar
+                case 902: // Basculegion
+                case 916: // Oinkologne
                     return "Male";
                 case 646: // Kyurem
                     return "Kyurem";
