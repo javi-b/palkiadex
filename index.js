@@ -998,7 +998,8 @@ function UpdatePokemongoCPText(level, ivs) {
     const pct = Math.round(100 * (ivs.atk + ivs.def + ivs.hp) / 45);
     $("#cp-text").html("with IVs " + ivs.atk + "/" + ivs.def + "/" + ivs.hp
             + " (" + pct + "%) at level " + level
-            + "<span id=rat-pct-vs-max></span>");
+            + "<span id=rat-pct-vs-max></span>"
+            + "<span id=sh-rat-pct-vs-max></span>");
 }
 
 /**
@@ -1660,8 +1661,9 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats = null) {
     const all_fms = fms.concat(elite_fms);
     const all_cms = cms.concat(elite_cms);
 
-    // variables used to calculate average rating percentage against max stats
+    // variables used to calculate average rating percentages against max stats
     let rat_pcts_vs_max = 0;
+    let rat_sh_pcts_vs_max = 0;
     let num_movesets = 0;
 
     // appends new table rows asynchronously (so that Mew loads fast)
@@ -1724,8 +1726,7 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats = null) {
                 rat_sh = Math.pow(dps_sh, 0.85) * Math.pow(tdo_sh, 0.15);
             }
 
-            // if necessary, calculates rating value of max stats, to be able to
-            // calculate the rating percent of specific stats against them 
+            // calculates average rating percentages against max stats
             if (max_stats) {
                 const max_dps = GetDPS(types, max_stats.atk, max_stats.def,
                     max_stats.hp, fm_obj, cm_obj);
@@ -1742,8 +1743,11 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats = null) {
                 }
 
                 rat_pcts_vs_max += rat / max_rat;
-                num_movesets++;
+                rat_sh_pcts_vs_max += rat_sh / max_rat;
+            } else {
+                rat_sh_pcts_vs_max += rat_sh / rat;
             }
+            num_movesets++;
 
             // creates one row
 
@@ -1786,7 +1790,18 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats = null) {
             let pct_str = avg_rat_pct_vs_max.toFixed(2) + "%";
             if (isNaN(avg_rat_pct_vs_max))
                 pct_str = "??";
-            $("#rat-pct-vs-max").text(" → " + settings_metric + " " + pct_str);
+            $("#rat-pct-vs-max").html(" → " + settings_metric + " " + pct_str);
+        }
+
+        // if can be shadow, calculates average rating percentage of shadow stats
+        // against max stats of all movesets and displays it on the CP section
+        if (can_be_shadow) {
+            let avg_rat_sh_pct_vs_max = 100 * rat_sh_pcts_vs_max / num_movesets;
+            let pct_str = avg_rat_sh_pct_vs_max.toFixed(2) + "%";
+            if (isNaN(avg_rat_sh_pct_vs_max))
+                pct_str = "??";
+            $("#sh-rat-pct-vs-max").html("<br> → Shadow " + settings_metric
+                    + " " + pct_str);
         }
 
         // appends the next fast move chunk, if there is more
