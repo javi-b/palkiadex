@@ -28,6 +28,8 @@
                     <li id=settings-lvl>Default level →
                         <span id=lvl-40 class="settings-opt settings-opt-sel unselectable">40</span>
                         <span id=lvl-50 class="settings-opt unselectable">50</span></li>
+                    <li id=settings-showstrongest>Show strongest
+                        <input type="number" id=strongest-count class="settings-num" value="20" min="20" max="50" step="10"></li>
                     <!--<li>Pkm sprites → 3DS POGO</li>-->
                 </ul>
             </div>
@@ -193,32 +195,55 @@
         <div id=strongest-links class="small-text unselectable">
             <ul>
                 <li><a class="type-text bg-any-type" onclick="LoadStrongestAndUpdateURL()">Each type</a></li>
+                <li><a class="type-text bg-any-type" onclick="LoadStrongestAndUpdateURL('Any')">All types</a></li>
             </ul>
             <ul id=strongest-links-types></ul>
         </div>
         <br>
-        <div class=center id=strongest-header>
-            <b id=strongest-title></b><br>
-            <span class=small-text id=strongest-filters>
-                <input type=checkbox value=unreleased unchecked>
-                    Unreleased
-                </input>
-                <input type=checkbox value=mega checked>
-                    Mega and Primal
-                </input>
-                <input type=checkbox value=shadow checked>
-                    Shadow
-                </input>
-                <input type=checkbox value=legendary checked>
-                    Legendary, Mythical and Ultrabeast
-                </input>
-                <input type=checkbox value=elite checked>
-                    Elite moves
-                </input>
-            </span>
+        <div id=strongest-header>
+            <div width=100% class=center id=strongest-title></div>
+            <div id=strongest-filters class="small-text filters-nowrap">
+                <div class="filters-box" id=pokemon-filters>
+                    <label>
+                        <input type=checkbox value=unreleased unchecked>
+                        Unreleased
+                    </label>
+                    <label>
+                        <input type=checkbox value=mega checked>
+                        Mega and Primal
+                    </label>
+                    <label>
+                        <input type=checkbox value=shadow checked>
+                        Shadow
+                    </label>
+                    <label>
+                        <input type=checkbox value=legendary checked>
+                        Legendary, Mythical and Ultrabeast
+                    </label>
+                </div>
+                <div class="filters-box" id=move-filters>
+                    <label>
+                        <input type=checkbox value=elite checked>
+                        Elite moves
+                    </label>
+                    <label>
+                        <input type=checkbox value=suboptimal id=chk-suboptimal unchecked>
+                        Suboptimal moves
+                    </label>
+                    <label class="opt-indent">
+                        <input type=checkbox value=grouped id=chk-grouped checked disabled>
+                        Display grouped
+                    </label>
+                    <label>
+                        <input type=checkbox value=mixed id=chk-mixed unchecked>
+                        Mixed movesets<sup>&dagger;</sup>
+                    </label>
+                </div>
+            </div>
         </div>
-        <table class="table-bg center" id=strongest-table></table>
-        <p class="small-text no-top-m">* elite fast or charged move</p>
+        <table class="table-bg" id=strongest-table></table>
+        <p class="small-text no-top-m no-bottom-m">* elite fast or charged move</p>
+        <p class="small-text no-top-m"><sup>&dagger;</sup> mixed moveset rankings are calculated using super-effective multiplier for the chosen type, and neutral damage for all other types</p>
     </div> <!-- end of 'strongest' div -->
 
     <!-- technical information legend and sources, and footer -->

@@ -50,6 +50,45 @@ button:focus {
 .table-bg th { background-color: var(--col-so-off); }
 .table-bg tr:nth-child(even) { background-color: WhiteSmoke; }
 
+#strongest-table td.td-poke-name { 
+    font-weight: bold; 
+    text-align: left;
+    padding-left: 10%;
+    vertical-align: middle;
+}
+#strongest-table tr.suboptimal td.td-poke-name { 
+    font-weight: normal; 
+}
+
+#strongest-table tr.suboptimal {
+    font-style: italic;
+}
+
+#strongest-table tr.suboptimal.grouped > *:nth-child(1) { 
+    color: transparent;
+    user-select: none; 
+}
+
+#strongest-table tr.suboptimal.grouped {
+    font-size: 90%;
+}
+#strongest-table tr.suboptimal.grouped td.td-poke-name { 
+    padding-left: 12%; 
+}
+#strongest-table tr.suboptimal.grouped .pokemon-icon { 
+    background-image: none !important; 
+}
+
+#strongest-table td.td-poke-name a {
+    display: block;
+    text-decoration: none;
+    width: fit-content;
+}
+
+/*
+#strongest-table tr.suboptimal td { background-color:rgba(255,0,0,0.05); }
+*/
+
 .pokefont {
     font-family: Pokemon;
 }
@@ -190,11 +229,21 @@ button:focus {
     width: 40px;
     height: 30px;
     display: inline-block;
+    vertical-align: middle;
+}
+
+span.poke-name {
+    text-decoration: underline;
+}
+
+span.poke-form-name {
+    text-decoration: none;
+    font-weight: normal;
+    font-size: 90%;
 }
 
 .shadow-text {
-    color: var(--col-bg);
-    background-color: var(--col-main);
+    color: var(--col-shadow);
 }
 
 /*
@@ -263,6 +312,32 @@ button:focus {
     font-weight: bold;
 }
 
+.settings-num {
+    font-weight: bold;
+    font-family: inherit;
+    font-size: inherit;
+    outline: none;
+    border: none;
+    background: none;
+    width: 4ch;
+}
+
+.opt-indent {
+    align-self: flex-end;
+}
+
+.filters-box {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    flex-direction: column;
+}
+
+.filters-nowrap {
+    display: flex;
+    justify-content: space-around;
+}
+
 #strongest-button-c {
     position: relative;
     width: 0;
@@ -275,6 +350,10 @@ button:focus {
     position: absolute;
     width: 300px;
     margin: 0;
+}
+
+#strongest-title {
+    font-weight: bold;
 }
 
 #input[type="text"] {
@@ -521,7 +600,7 @@ button:focus {
 
 #strongest a {
     cursor: pointer;
-    text-decoration: underline;
+    /*text-decoration: underline;*/
 }
 
 #strongest-header {
@@ -560,15 +639,15 @@ button:focus {
     /*table-layout: fixed;*/
 } 
 #strongest-table tr { height: 30px; }
-#strongest-table td { padding: 0; }
-
-#strongest-table tr > *:nth-child(1) { width: 50%; }
-#strongest-table tr > *:nth-child(2) { width: 15%; }
-#strongest-table tr > *:nth-child(3) { width: 15%; }
-#strongest-table tr > *:nth-child(4) { width: 20%; }
-
-#strongest-table tr > *:nth-child(1) * {
-    vertical-align: middle;
+#strongest-table td { 
+    padding-top: 0;
+    padding-bottom: 0;
 }
+
+#strongest-table tr > *:nth-child(1) { width: 5%; }
+#strongest-table tr > *:nth-child(2) { width: 50%; }
+#strongest-table tr > *:nth-child(3) { width: 15%; }
+#strongest-table tr > *:nth-child(4) { width: 15%; }
+#strongest-table tr > *:nth-child(5) { width: 15%; }
 
 #legend { display: none; }
