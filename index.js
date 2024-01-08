@@ -2238,9 +2238,9 @@ function LoadStrongest(type = null) {
     if ($("#legend").css("display") == "none")
         $("#legend").css("display", "initial");
 
-    // Only enable move filters if we're searching a specific type (not "Each")
+    // Only enable suboptimal filters if we're searching a specific type (not "Each")
     if (type == null)
-        $("#chk-suboptimal, #chk-mixed, #chk-grouped").prop("disabled", true);
+        $("#chk-suboptimal, #chk-grouped").prop("disabled", true);
     else 
         $("#chk-suboptimal, #chk-mixed").prop("disabled", false);
 
@@ -2287,7 +2287,7 @@ function LoadStrongest(type = null) {
                 search_suboptimal, search_mixed, type);
     } else {
         SetTableOfStrongestOfEachType(search_unreleased, search_mega,
-                search_shadow, search_legendary, search_elite);
+                search_shadow, search_legendary, search_elite, search_mixed);
     }
 }
 
@@ -2296,7 +2296,7 @@ function LoadStrongest(type = null) {
  * pokemon table with the result.
  */
 function SetTableOfStrongestOfEachType(search_unreleased, search_mega,
-        search_shadow, search_legendary, search_elite) {
+        search_shadow, search_legendary, search_elite, search_mixed) {
 
     // map of strongest pokemon and moveset found so far for each type
     let str_pokemons = new Map();
@@ -2309,11 +2309,11 @@ function SetTableOfStrongestOfEachType(search_unreleased, search_mega,
     function CheckIfStronger(jb_pkm_obj, mega, mega_y, shadow) {
 
         const types_movesets = GetPokemonStrongestMovesets(jb_pkm_obj,
-                mega, mega_y, shadow, search_elite, 1);
+                mega, mega_y, shadow, search_elite, 1, null, search_mixed);
 
         for (const type of POKEMON_TYPES) {
 
-            // checks that pokemon has a moveset solely of this type
+            // checks that pokemon has a moveset of this type
             if (!types_movesets.has(type))
                 continue;
 
@@ -2665,48 +2665,56 @@ function GetPokemonStrongestMovesets(jb_pkm_obj, mega, mega_y, shadow,
             if (fm_obj.type != cm_obj.type && !search_mixed)
                 continue;
 
-            let moves_type = (search_type) ? search_type : fm_obj.type;
+            // determine what move types we're ranking
+            let moves_types;
+            if (search_type)
+                moves_types = [search_type]
+            else if (fm_obj.type == cm_obj.type)
+                moves_types = [fm_obj.type]
+            else
+                moves_types = [fm_obj.type, cm_obj.type]
 
             // calculates the data
+            for (let mt of moves_types) {
+                let dps;
+                // non-mixed or "anything-goes" searches use traditional dps
+                if (fm_obj.type == cm_obj.type || search_type == "Any") {
+                    dps = GetDPS(types, atk, def, hp, 
+                        fm_obj, cm_obj);
+                }
+                else { // mixed movesets scale based on search type (super-effective mult)
+                    dps = GetDPS(types, atk, def, hp, 
+                        fm_obj, cm_obj,
+                        (fm_obj.type == mt && search_mixed) ? 1.60 : 1,
+                        (cm_obj.type == mt && search_mixed) ? 1.60 : 1) / 1.60;
+                }
+                
+                const tdo = GetTDO(dps, hp, def);
+                // metrics from Reddit user u/Elastic_Space
+                let rat = 0;
+                if (settings_metric == "ER") {
+                    const dps3tdo = Math.pow(dps, 3) * tdo;
+                    rat = Math.pow(dps3tdo, 1/4);
+                } else if (settings_metric == "EER") {
+                    rat = Math.pow(dps, 0.775) * Math.pow(tdo, 0.225);
+                } else if (settings_metric == "TER") {
+                    rat = Math.pow(dps, 0.85) * Math.pow(tdo, 0.15);
+                }
 
-            let dps;
-            // non-mixed or "anything-goes" searches use traditional dps
-            if (fm_obj.type == cm_obj.type || search_type == "Any") {
-                dps = GetDPS(types, atk, def, hp, 
-                    fm_obj, cm_obj);
-            }
-            else { // mixed movesets scale based on search type (super-effective mult)
-                dps = GetDPS(types, atk, def, hp, 
-                    fm_obj, cm_obj,
-                    (fm_obj.type == search_type && search_mixed) ? 1.60 : 1,
-                    (cm_obj.type == search_type && search_mixed) ? 1.60 : 1) / 1.60;
-            }
-            
-            const tdo = GetTDO(dps, hp, def);
-            // metrics from Reddit user u/Elastic_Space
-            let rat = 0;
-            if (settings_metric == "ER") {
-                const dps3tdo = Math.pow(dps, 3) * tdo;
-                rat = Math.pow(dps3tdo, 1/4);
-            } else if (settings_metric == "EER") {
-                rat = Math.pow(dps, 0.775) * Math.pow(tdo, 0.225);
-            } else if (settings_metric == "TER") {
-                rat = Math.pow(dps, 0.85) * Math.pow(tdo, 0.15);
-            }
+                // summary of this moveset and its rating
+                const cur_moveset = {
+                    rat: rat, 
+                    fm: fm, fm_is_elite: fm_is_elite, fm_type: fm_obj.type,
+                    cm: cm, cm_is_elite: cm_is_elite, cm_type: cm_obj.type,
+                };
 
-            // summary of this moveset and its rating
-            const cur_moveset = {
-                rat: rat, 
-                fm: fm, fm_is_elite: fm_is_elite, fm_type: fm_obj.type,
-                cm: cm, cm_is_elite: cm_is_elite, cm_type: cm_obj.type,
-            };
-
-            // build array of all valid movesets
-            if (!types_movesets.has(moves_type)) {
-                types_movesets.set(moves_type, [cur_moveset]);
-            }
-            else {
-                types_movesets.get(moves_type).push(cur_moveset);
+                // build array of all valid movesets
+                if (!types_movesets.has(mt)) {
+                    types_movesets.set(mt, [cur_moveset]);
+                }
+                else {
+                    types_movesets.get(mt).push(cur_moveset);
+                }
             }
         }
     }
