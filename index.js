@@ -1903,8 +1903,15 @@ function GetDPS(types, atk, def, hp, fm_obj, cm_obj, fm_mult = 1, cm_mult = 1,
     // simple cycle DPS
     const dps0 = (fm_dps * cm_eps + cm_dps * fm_eps) / (cm_eps + fm_eps);
     // comprehensive DPS
-    const dps = dps0 + ((cm_dps - fm_dps) / (cm_eps + fm_eps))
+    let dps = dps0 + ((cm_dps - fm_dps) / (cm_eps + fm_eps))
             * (0.5 - x / hp) * y;
+
+    // charged move is strictly better, and can be used indefinitely
+    if (cm_dps > fm_dps && -cm_obj.energy_delta < y * cm_obj.duration / 1000 * 0.5) 
+        dps = cm_dps;
+    // fast move is strictly better
+    if (fm_dps > dps)
+        dps = fm_dps;
 
     return ((dps < 0) ? 0 : dps);
 }
