@@ -457,6 +457,9 @@ function GetPokemonForms(pokemon_id) {
             return [ "West_sea", "East_sea" ];
         case 479: // Rotom
             return [ "Normal", "Heat", "Wash", "Frost", "Fan", "Mow" ]
+        case 483: // Dialga
+        case 484: // Palkia
+            return [ "Normal", "Origin" ];
         case 487: // Giratina
             return [ "Altered", "Origin" ];
         case 492: // Shaymin
@@ -1070,6 +1073,10 @@ function GetPokemonIconCoords(pokemon_id, form, mega, mega_y) {
     } else if (pokemon_id == 479 && form == "Mow") { // Rotom
         col = 3, row = 89;
 
+    } else if (pokemon_id == 483 && form == "Origin") { // Dialga
+        col = 9, row = 104;
+    } else if (pokemon_id == 484 && form == "Origin") { // Palkia
+        col = 10, row = 104;
     } else if (pokemon_id == 487 && form == "Origin") { // Giratina
         col = 5, row = 89;
 
