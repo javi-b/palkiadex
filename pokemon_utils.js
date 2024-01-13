@@ -1047,6 +1047,9 @@ function GetPokemonIconCoords(pokemon_id, form, mega, mega_y) {
     } else if (pokemon_id == 146 && form == "Galarian") { // Moltres
         col = 10, row = 101;
 
+    } else if (pokemon_id == 157 && form == "Hisuian") { // Typhlosion
+        col = 6, row = 102;
+
     } else if (pokemon_id == 199 && form == "Galarian") { // Slowking
         col = 11, row = 101;
 
@@ -1072,6 +1075,9 @@ function GetPokemonIconCoords(pokemon_id, form, mega, mega_y) {
 
     } else if (pokemon_id == 492 && form == "Sky") { // Shaymin
         col = 6, row = 89;
+
+    } else if (pokemon_id == 503 && form == "Hisuian") { // Samurott
+        col = 9, row = 102;
 
     } else if (pokemon_id == 555 && form == "Zen") { // Darmanitan
             col = 9, row = 89;
@@ -1126,6 +1132,9 @@ function GetPokemonIconCoords(pokemon_id, form, mega, mega_y) {
 
     } else if (pokemon_id == 720 && form == "Unbound") { // Hoopa
         col = 10, row = 94;
+
+    } else if (pokemon_id == 724 && form == "Hisuian") { // Decidueye
+        col = 5, row = 103;
 
     } else if (pokemon_id == 741 && form == "Pompom") { // Oricorio
         col = 8, row = 96;
