@@ -39,7 +39,7 @@
 
     <!-- search bar and strongest button -->
     <div class=center>
-        <div id=strongest-button-c><p id=strongest-button class="small-text off">or see the <a id=strongest-link href=#>strongest of each type</a></p></div>
+        <div id=strongest-button-c><p id=strongest-button class="small-text off">or see the <a id=strongest-link href=#>strongest list</a></p></div>
         <p class="center small-text off no-top-m">search a Pokémon name or id...</p>
         <form autocomplete=off>
             <input id=input type=text>
@@ -192,7 +192,8 @@
         <p class="center small-text off no-bottom-m">select what type's strongest Pokémon you want to see</p>
         <div id=strongest-links class="small-text unselectable">
             <ul>
-                <li><a class="type-text bg-any-type" onclick="LoadStrongestAndUpdateURL()">Each type</a></li>
+                <li><a class="type-text bg-any-type" onclick="LoadStrongestAndUpdateURL('any')">Any type</a></li>
+                <li><a class="type-text bg-any-type" onclick="LoadStrongestAndUpdateURL('each')">Each type</a></li>
             </ul>
             <ul id=strongest-links-types></ul>
         </div>

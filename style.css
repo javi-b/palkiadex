@@ -190,11 +190,11 @@ button:focus {
     width: 40px;
     height: 30px;
     display: inline-block;
+    vertical-align: middle;
 }
 
 .shadow-text {
-    color: var(--col-bg);
-    background-color: var(--col-main);
+    color: darkmagenta;
 }
 
 /*
@@ -268,7 +268,7 @@ button:focus {
     width: 0;
     height: 0;
     margin: 0 auto;
-    transform: translateX(+125px);
+    transform: translateX(+100px);
 }
 
 #strongest-button {
@@ -521,7 +521,6 @@ button:focus {
 
 #strongest a {
     cursor: pointer;
-    text-decoration: underline;
 }
 
 #strongest-header {
@@ -562,13 +561,19 @@ button:focus {
 #strongest-table tr { height: 30px; }
 #strongest-table td { padding: 0; }
 
-#strongest-table tr > *:nth-child(1) { width: 50%; }
-#strongest-table tr > *:nth-child(2) { width: 15%; }
+#strongest-table tr > *:nth-child(1) { width: 5%; }
+#strongest-table tr > *:nth-child(2) { width: 45%; }
 #strongest-table tr > *:nth-child(3) { width: 15%; }
-#strongest-table tr > *:nth-child(4) { width: 20%; }
+#strongest-table tr > *:nth-child(4) { width: 15%; }
+#strongest-table tr > *:nth-child(5) { width: 20%; }
 
 #strongest-table tr > *:nth-child(1) * {
     vertical-align: middle;
+}
+
+span.strongest-name {
+    text-decoration: underline;
+    font-weight: bold;
 }
 
 #legend { display: none; }
