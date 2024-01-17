@@ -2894,7 +2894,7 @@ function SetStrongestTableFromArray(str_pokemons, ranks = null, num_rows = null)
                 + ICONS_URL + ");background-position:" + coords.x + "px "
                 + coords.y + "px'></span>"
                 + "<span class='strongest-name'>"
-                + ((primal) ? ("Primal ") : ((p.mega) ? "Mega " : " "))
+                + ((primal) ? ("Primal ") : ((p.mega) ? "Mega " : ""))
                 + ((p.shadow)
                     ? "<span class=shadow-text>Shadow</span> " : "")
                 + name
