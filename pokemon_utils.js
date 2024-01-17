@@ -469,7 +469,7 @@ function GetPokemonForms(pokemon_id) {
                 "Fighting", "Poison", "Ground", "Flying", "Psychic", "Bug",
                 "Rock", "Ghost", "Dragon", "Dark", "Steel", "Fairy" ];
         case 550: // Basculin
-            return [ "Red_striped", "Blue_striped"];
+            return [ "Red_striped", "Blue_striped", "White_striped" ];
         case 555: // Darmanitan
             return [ "Standard", "Zen",
                 "Galarian_standard", "Galarian_zen" ];
@@ -743,9 +743,11 @@ function GetFormText(pokemon_id, form) {
         case "Douse":
             return form + " Drive";
         case "Red_striped":
-            return "Red-Striped";
+            return "Red-Striped Form";
         case "Blue_striped":
-            return "Blue-Striped";
+            return "Blue-Striped Form";
+        case "White_striped":
+            return "White-Striped Form";
         case "Standard":
             return "Standard Mode";
         case "Zen":
