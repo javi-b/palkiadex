@@ -554,6 +554,10 @@ button:focus {
     text-decoration: none;
 }
 
+.strongest-link-selected {
+    font-weight: bold;
+}
+
 #strongest-table {
     width: 100%;
     /*table-layout: fixed;*/

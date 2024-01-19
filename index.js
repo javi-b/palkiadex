@@ -2212,12 +2212,21 @@ function LoadStrongest(type = "any") {
         $("#legend").css("display", "initial");
 
     // sets links
+    let strongest_link_any = $("#strongest-links > ul:first() > li:nth-child(1)");
+    let strongest_link_each = $("#strongest-links > ul:first() > li:nth-child(2)");
+    strongest_link_any.removeClass("strongest-link-selected");
+    strongest_link_each.removeClass("strongest-link-selected");
+    if (type == "any")
+        strongest_link_any.addClass("strongest-link-selected");
+    else if (type == "each")
+        strongest_link_each.addClass("strongest-link-selected");
     let links_types = $("#strongest-links-types");
     links_types.empty();
-    for (const type of POKEMON_TYPES) {
-        links_types.append("<li><a class='type-text bg-" + type
-                + "' onclick='LoadStrongestAndUpdateURL(\"" + type
-                + "\")'>" + type + "</a></li>");
+    for (const t of POKEMON_TYPES) {
+        links_types.append("<li><a class='type-text bg-" + t
+                + ((t == type) ? " strongest-link-selected" : "")
+                + "' onclick='LoadStrongestAndUpdateURL(\"" + t
+                + "\")'>" + t + "</a></li>");
     }
 
     // sets titles
