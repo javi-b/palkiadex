@@ -2248,16 +2248,18 @@ function LoadStrongest(type = "any") {
         $("#strongest input[value='legendary']:checkbox").is(":checked");
     let search_elite =
         $("#strongest input[value='elite']:checkbox").is(":checked");
+    let search_different_type =
+        $("#strongest input[value='different-type']:checkbox").is(":checked");
 
     if (type == 'each') {
-        SetTableOfStrongestOfEachType(search_unreleased, search_mega,
-                search_shadow, search_legendary, search_elite);
+        SetTableOfStrongestOfEachType(search_unreleased, search_mega, search_shadow,
+                search_legendary, search_elite, search_different_type);
     } else if (type == 'any') {
-        SetTableOfStrongestOfAnyType(search_unreleased, search_mega,
-                search_shadow, search_legendary, search_elite);
+        SetTableOfStrongestOfAnyType(search_unreleased, search_mega, search_shadow,
+                search_legendary, search_elite, search_different_type);
     } else {
-        SetTableOfStrongestOfOneType(search_unreleased, search_mega,
-                search_shadow, search_legendary, search_elite, type);
+        SetTableOfStrongestOfOneType(search_unreleased, search_mega, search_shadow,
+                search_legendary, search_elite, search_different_type, type);
     }
 }
 
@@ -2266,7 +2268,7 @@ function LoadStrongest(type = "any") {
  * pokemon table with the result.
  */
 function SetTableOfStrongestOfEachType(search_unreleased, search_mega,
-        search_shadow, search_legendary, search_elite) {
+        search_shadow, search_legendary, search_different_type, search_elite) {
 
     // map of strongest pokemon and moveset found so far for each type
     let str_pokemons = new Map();
@@ -2279,7 +2281,7 @@ function SetTableOfStrongestOfEachType(search_unreleased, search_mega,
     function CheckIfStronger(jb_pkm_obj, mega, mega_y, shadow) {
 
         const types_movesets = GetPokemonStrongestMovesetsOfEachType(jb_pkm_obj,
-                mega, mega_y, shadow, search_elite);
+                mega, mega_y, shadow, search_different_type, search_elite);
 
         for (const type of POKEMON_TYPES) {
 
@@ -2309,9 +2311,9 @@ function SetTableOfStrongestOfEachType(search_unreleased, search_mega,
                     rat: moveset.rat, id: jb_pkm_obj.id,
                     name: jb_pkm_obj.name, form: jb_pkm_obj.form,
                     mega: mega, mega_y: mega_y, shadow: shadow,
-                    fm: moveset.fm, fm_type: moveset.moves_type,
+                    fm: moveset.fm, fm_type: moveset.fm_type,
                     fm_is_elite: moveset.fm_is_elite,
-                    cm: moveset.cm, cm_type: moveset.moves_type,
+                    cm: moveset.cm, cm_type: moveset.cm_type,
                     cm_is_elite: moveset.cm_is_elite
                 };
                 str_pokemons.set(type, str_pokemon);
@@ -2393,7 +2395,7 @@ function SetTableOfStrongestOfEachType(search_unreleased, search_mega,
  * pokemon table with the result.
  */
 function SetTableOfStrongestOfAnyType(search_unreleased, search_mega,
-        search_shadow, search_legendary, search_elite) {
+        search_shadow, search_legendary, search_elite, search_different_type) {
 
     const num_rows = POKEMON_TYPES.size;
 
@@ -2411,7 +2413,7 @@ function SetTableOfStrongestOfAnyType(search_unreleased, search_mega,
     function CheckIfStronger(jb_pkm_obj, mega, mega_y, shadow) {
 
         const moveset = GetPokemonStrongestMoveset(jb_pkm_obj,
-                mega, mega_y, shadow, search_elite);
+                mega, mega_y, shadow, search_elite, search_different_type);
 
         let is_strong_enough = false;
 
@@ -2522,7 +2524,7 @@ function SetTableOfStrongestOfAnyType(search_unreleased, search_mega,
  * pokemon of each type, therefore, there are as many rows as pkm types.
  */
 function SetTableOfStrongestOfOneType(search_unreleased, search_mega,
-        search_shadow, search_legendary, search_elite, type) {
+        search_shadow, search_legendary, search_elite, search_different_type, type) {
 
     const num_rows = POKEMON_TYPES.size;
 
@@ -2540,7 +2542,7 @@ function SetTableOfStrongestOfOneType(search_unreleased, search_mega,
     function CheckIfStronger(jb_pkm_obj, mega, mega_y, shadow) {
 
         const types_movesets = GetPokemonStrongestMovesetsOfEachType(jb_pkm_obj,
-                mega, mega_y, shadow, search_elite, type);
+                mega, mega_y, shadow, search_elite, search_different_type, type);
         if (!types_movesets.has(type))
             return;
         const moveset = types_movesets.get(type);
@@ -2567,9 +2569,9 @@ function SetTableOfStrongestOfOneType(search_unreleased, search_mega,
                 rat: moveset.rat, id: jb_pkm_obj.id,
                 name: jb_pkm_obj.name, form: jb_pkm_obj.form,
                 mega: mega, mega_y: mega_y, shadow: shadow,
-                fm: moveset.fm, fm_type: moveset.moves_type,
+                fm: moveset.fm, fm_type: moveset.fm_type,
                 fm_is_elite: moveset.fm_is_elite,
-                cm: moveset.cm, cm_type: moveset.moves_type,
+                cm: moveset.cm, cm_type: moveset.cm_type,
                 cm_is_elite: moveset.cm_is_elite
             };
 
@@ -2650,11 +2652,16 @@ function SetTableOfStrongestOfOneType(search_unreleased, search_mega,
 
 /**
  * Gets map of a specific pokemon's strongest movesets for each type.
+ * 
  * If the 'search_type' param is specified, only tries to find movesets
  * of that type.
+ * 
+ * However, if 'search_different_type' is true, all other types are allowed but
+ * their rating is calculated as if they are not very effective but the selected
+ * type is neutral.
  */
 function GetPokemonStrongestMovesetsOfEachType(jb_pkm_obj, mega, mega_y, shadow,
-        search_elite, search_type = null) {
+        search_elite, search_different_type, search_type = null) {
 
     let types_movesets = new Map();
 
@@ -2706,8 +2713,8 @@ function GetPokemonStrongestMovesetsOfEachType(jb_pkm_obj, mega, mega_y, shadow,
             continue;
 
         // checks that fm type matches the type searched
-        // (is search type isn't specified, any type goes)
-        if (search_type && fm_obj.type != search_type)
+        // (is diff types are allowed or search type isn't specified, any type goes)
+        if (!search_different_type && search_type && fm_obj.type != search_type)
             continue;
 
         for (cm of all_cms) {
@@ -2723,41 +2730,57 @@ function GetPokemonStrongestMovesetsOfEachType(jb_pkm_obj, mega, mega_y, shadow,
                 continue;
 
             // checks that cm type matches the type searched
-            // (is search type isn't specified, any type goes)
-            if (search_type && cm_obj.type != search_type)
+            // (is diff types are allowed or search type isn't specified, any type goes)
+            if (!search_different_type && search_type && cm_obj.type != search_type)
                 continue;
 
             // checks that both moves types are equal
-            if (fm_obj.type != cm_obj.type)
+            // (if diff types are allowed, they don't need to be equal)
+            if (!search_different_type && fm_obj.type != cm_obj.type)
                 continue;
 
-            const moves_type = fm_obj.type;
+            // evaluates the movesets for each type that matters and,
+            // if they are strong enough, adds them to the map as the strongest
+            // moveset of said type
 
-            // calculates the data
+            let moves_types;
+            if (search_type)
+                moves_types = [ search_type ];
+            else if (fm_obj.type == cm_obj.type)
+                moves_types = [ fm_obj.type ];
+            else
+                moves_types = [ fm_obj.type, cm_obj.type ];
 
-            const dps = GetDPS(types, atk, def, hp, fm_obj, cm_obj);
-            const tdo = GetTDO(dps, hp, def);
-            // metrics from Reddit user u/Elastic_Space
-            let rat = 0;
-            if (settings_metric == "ER") {
-                const dps3tdo = Math.pow(dps, 3) * tdo;
-                rat = Math.pow(dps3tdo, 1/4);
-            } else if (settings_metric == "EER") {
-                rat = Math.pow(dps, 0.775) * Math.pow(tdo, 0.225);
-            } else if (settings_metric == "TER") {
-                rat = Math.pow(dps, 0.85) * Math.pow(tdo, 0.15);
-            }
+            for (let moves_type of moves_types) {
 
-            // checks whether this moveset is the strongest for this type
-            // so far and, if it is, overrides the previous strongest
-            if (!types_movesets.has(moves_type)
-                    || rat > types_movesets.get(moves_type).rat) {
-                const type_moveset = {
-                    rat: rat, moves_type: moves_type,
-                    fm: fm, fm_is_elite: fm_is_elite,
-                    cm: cm, cm_is_elite: cm_is_elite
-                };
-                types_movesets.set(moves_type, type_moveset);
+                // calculates the data
+
+                const dps = GetDPS(types, atk, def, hp, fm_obj, cm_obj,
+                        ((fm_obj.type == moves_type) ? 1 : 0.625),
+                        ((cm_obj.type == moves_type) ? 1 : 0.625));
+                const tdo = GetTDO(dps, hp, def);
+                // metrics from Reddit user u/Elastic_Space
+                let rat = 0;
+                if (settings_metric == "ER") {
+                    const dps3tdo = Math.pow(dps, 3) * tdo;
+                    rat = Math.pow(dps3tdo, 1/4);
+                } else if (settings_metric == "EER") {
+                    rat = Math.pow(dps, 0.775) * Math.pow(tdo, 0.225);
+                } else if (settings_metric == "TER") {
+                    rat = Math.pow(dps, 0.85) * Math.pow(tdo, 0.15);
+                }
+
+                // checks whether this moveset is the strongest for this type
+                // so far and, if it is, overrides the previous strongest
+                if (!types_movesets.has(moves_type)
+                        || rat > types_movesets.get(moves_type).rat) {
+                    const type_moveset = {
+                        rat: rat,
+                        fm: fm, fm_type: fm_obj.type, fm_is_elite: fm_is_elite,
+                        cm: cm, cm_type: cm_obj.type, cm_is_elite: cm_is_elite
+                    };
+                    types_movesets.set(moves_type, type_moveset);
+                }
             }
         }
     }
@@ -2769,7 +2792,7 @@ function GetPokemonStrongestMovesetsOfEachType(jb_pkm_obj, mega, mega_y, shadow,
  * Gets a specific pokemon's strongest moveset.
  */
 function GetPokemonStrongestMoveset(jb_pkm_obj, mega, mega_y, shadow,
-        search_elite) {
+        search_elite, search_different_type) {
 
     let moveset = {};
 
@@ -2830,6 +2853,11 @@ function GetPokemonStrongestMoveset(jb_pkm_obj, mega, mega_y, shadow,
             // gets the charged move object
             const cm_obj = jb_cm.find(entry => entry.name == cm);
             if (!cm_obj)
+                continue;
+
+            // checks that both moves types are equal
+            // (if diff types are allowed, they don't need to be equal)
+            if (!search_different_type && fm_obj.type != cm_obj.type)
                 continue;
 
             // calculates the data
