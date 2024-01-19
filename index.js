@@ -2873,8 +2873,6 @@ function GetPokemonStrongestMoveset(jb_pkm_obj, mega, mega_y, shadow,
  */
 function SetStrongestTableFromArray(str_pokemons, ranks = null, num_rows = null) {
 
-    console.log(ranks);
-
     if (!num_rows)
         num_rows = str_pokemons.length;
 
