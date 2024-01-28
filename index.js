@@ -1600,7 +1600,8 @@ function ShowCountersPopup(hover_element, show, counter = null) {
                 : "")
 
         $("#counters-popup").html("<span>" + name
-            + "<br><span class='type-text bg-" + counter.fm_type + "'>"
+            + "<br><span class='type-text bg-"
+            + ((counter.fm == "Hidden Power") ? "any-type" : counter.fm_type) + "'>"
             + counter.fm + ((counter.fm_is_elite) ? "*" : "")
             + "</span> <span class='type-text bg-" + counter.cm_type + "'>"
             + counter.cm + ((counter.cm_is_elite) ? "*" : "")
@@ -1758,7 +1759,8 @@ function LoadPokemongoTable(jb_pkm_obj, mega, mega_y, stats, max_stats = null) {
             // creates one row
 
             const tr = $("<tr></tr>");
-            const td_fm = $("<td><span class='type-text bg-" + fm_type
+            const td_fm = $("<td><span class='type-text bg-"
+                    + ((fm == "Hidden Power") ? "any-type" : fm_type)
                     + "'>" + fm + ((fm_is_elite) ? "*" : "")
                     + "</span></td>");
             const td_cm = $("<td><span class='type-text bg-" + cm_type
@@ -1834,9 +1836,29 @@ function GetPokemongoMoves(jb_pkm_obj) {
 
     if (!jb_pkm_obj.fm && !jb_pkm_obj.cm)
         return [];
-    return [jb_pkm_obj.fm, jb_pkm_obj.cm,
-            (jb_pkm_obj.elite_fm) ? jb_pkm_obj.elite_fm : [],
-            (jb_pkm_obj.elite_cm) ? jb_pkm_obj.elite_cm : []];
+
+    let fm = jb_pkm_obj.fm.slice();
+    let elite_fm = [];
+    if (jb_pkm_obj.elite_fm)
+        elite_fm = jb_pkm_obj.elite_fm.slice();
+    let cm = jb_pkm_obj.cm.slice();
+    let elite_cm = [];
+    if (jb_pkm_obj.elite_cm)
+        elite_cm = jb_pkm_obj.elite_cm.slice();
+
+    // checks for hidden power
+    if (fm.includes("Hidden Power") || elite_fm.includes("Hidden Power")) {
+        for (let type of POKEMON_TYPES) {
+            if (!["Normal", "Fairy"].includes(type) && jb_pkm_obj.types.includes(type)) {
+                if (fm.includes("Hidden Power"))
+                    fm.push("Hidden Power " + type);
+                if (elite_fm.includes("Hidden Power"))
+                    elite_fm.push("Hidden Power " + type)
+            }
+        }
+    }
+
+    return [fm, cm, elite_fm, elite_cm];
 }
 
 /**
@@ -1865,7 +1887,8 @@ function GetDPS(types, atk, def, hp, fm_obj, cm_obj, fm_mult = 1, cm_mult = 1,
         y = 900 / def;
 
     // fast move variables
-    const fm_dmg_mult = fm_mult * ((types.includes(fm_obj.type)) ? 1.2 : 1);
+    const fm_dmg_mult = fm_mult
+        * ((types.includes(fm_obj.type) && fm_obj.name != "Hidden Power") ? 1.2 : 1);
     const fm_dmg = 0.5 * fm_obj.power * (atk / enemy_def) * fm_dmg_mult + 0.5;
     const fm_dps = fm_dmg / (fm_obj.duration / 1000);
     const fm_eps = fm_obj.energy_delta / (fm_obj.duration / 1000);
@@ -1913,7 +1936,8 @@ function GetSpecificY(types, atk, fm_obj, cm_obj, fm_mult = 1, cm_mult = 1,
     const x = 0.5 * -cm_obj.energy_delta + 0.5 * fm_obj.energy_delta;
 
     // fast move variables
-    const fm_dmg_mult = fm_mult * ((types.includes(fm_obj.type)) ? 1.2 : 1);
+    const fm_dmg_mult = fm_mult
+        * ((types.includes(fm_obj.type) && fm_obj.name != "Hidden Power") ? 1.2 : 1);
     const fm_dmg = 0.5 * fm_obj.power * (atk / enemy_def) * fm_dmg_mult + 0.5;
 
     // charged move variables
@@ -2709,7 +2733,7 @@ function GetPokemonStrongestMovesetsOfEachType(jb_pkm_obj, mega, mega_y, shadow,
 
         // gets the fast move object
         const fm_obj = jb_fm.find(entry => entry.name == fm);
-        if (!fm_obj)
+        if (!fm_obj || fm_obj.name == "Hidden Power")
             continue;
 
         // checks that fm type matches the type searched
@@ -2840,7 +2864,7 @@ function GetPokemonStrongestMoveset(jb_pkm_obj, mega, mega_y, shadow,
 
         // gets the fast move object
         const fm_obj = jb_fm.find(entry => entry.name == fm);
-        if (!fm_obj)
+        if (!fm_obj || fm_obj.name == "Hidden Power")
             continue;
 
         for (cm of all_cms) {
@@ -2941,7 +2965,8 @@ function SetStrongestTableFromArray(str_pokemons, ranks = null, num_rows = null)
                     : "")
                 + "</a></td>";
             const td_fm =
-                "<td><span class='type-text bg-" + p.fm_type + "'>"
+                "<td><span class='type-text bg-"
+                + ((p.fm == "Hidden Power") ? "any-type" : p.fm_type) + "'>"
                 + p.fm + ((p.fm_is_elite) ? "*" : "") + "</span></td>";
             const td_cm =
                 "<td><span class='type-text bg-" + p.cm_type + "'>"
