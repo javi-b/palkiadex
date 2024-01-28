@@ -517,6 +517,15 @@ button:focus {
     text-decoration: underline;
 }
 
+#pokemongo-table td {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+#pokemongo-table tr > *:nth-child(1) { width: 18%; }
+#pokemongo-table tr > *:nth-child(2) { width: 18%; }
+
 #strongest { display: none; }
 
 #strongest a {
