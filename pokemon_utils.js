@@ -1179,6 +1179,9 @@ function GetPokemonIconCoords(pokemon_id, form, mega, mega_y) {
     } else if (pokemon_id == 898 && form == "Shadow_rider") { // Calyrex
         col = 1, row = 102;
 
+    } else if (pokemon_id == 905 && form == "Therian") { // Enamorus
+        col = 7, row = 103;
+
     } else {
         col = pokemon_id % NUM_COLS;
         row = Math.floor(pokemon_id / NUM_COLS);
