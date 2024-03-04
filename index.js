@@ -116,6 +116,8 @@ function Main() {
     $("#lvl-40").click(function() { SetDefaultLevel(40); });
     $("#lvl-50").click(function() { SetDefaultLevel(50); });
 
+    $("#note-header").click(function() { ToggleNote(); });
+
     $("#stats-form").submit(function(e) {
         UpdatePokemonStatsAndURL();
         return false;
@@ -289,6 +291,19 @@ function SetDefaultLevel(level) {
 
     // reload page
     CheckURLAndAct();
+}
+
+/**
+ * Toggles the note body's visibility.
+ */
+function ToggleNote() {
+
+    let note_body = $("#note-body");
+
+    if (note_body.css("display") == "none")
+        note_body.css("display", "block");
+    else
+        note_body.css("display", "none");
 }
 
 /**
