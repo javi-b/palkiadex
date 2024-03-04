@@ -116,7 +116,8 @@ function Main() {
     $("#lvl-40").click(function() { SetDefaultLevel(40); });
     $("#lvl-50").click(function() { SetDefaultLevel(50); });
 
-    $("#note-header").click(function() { ToggleNote(); });
+    $("#note-icon").click(function() { ToggleNote(); });
+    $("#note-title").click(function() { ToggleNote(); });
 
     $("#stats-form").submit(function(e) {
         UpdatePokemonStatsAndURL();
