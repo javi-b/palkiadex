@@ -558,6 +558,8 @@ function GetPokemonForms(pokemon_id) {
             return [ "Normal", "Female" ];
         case 916: // Oinkologne
             return [ "Normal", "Female" ];
+        case 925: // Maushold
+            return [ "Family_of_four", "Family_of_three" ]
         default:
             return [ "Normal" ];
     }
@@ -852,6 +854,10 @@ function GetFormText(pokemon_id, form) {
             return "Ice Rider";
         case "Shadow_rider":
             return "Shadow Rider";
+        case "Family_of_four":
+            return "Family of Four";
+        case "Family_of_three":
+            return "Family of Three";
     }
 
     return "";
