@@ -443,6 +443,10 @@ function GetPokemonForms(pokemon_id) {
             return [ "Normal", "Hisuian" ];
         case 194: // Wooper
             return ["Normal", "Paldea"];
+        case 201: // Unown
+            return ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L",
+                "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y",
+                "Z", "Exclamation_point", "Question_mark"];
         case 351: // Castform
             return [ "Normal", "Sunny", "Rainy", "Snowy" ];
         case 386: // Deoxys
@@ -641,8 +645,10 @@ function GetPokemonImgSrcName(pokemon_id, clean_name, form, mega, mega_y) {
  */
 function GetFormText(pokemon_id, form) {
 
-    if (pokemon_id == 493 || pokemon_id == 773) // Arceus or Silvally
+    if (pokemon_id == 493 || pokemon_id == 773 // Arceus or Silvally
+            || pokemon_id == 201 && form != "Exclamation_point" && form != "Question_mark") { // Unown letters
         return form;
+    }
 
     if (pokemon_id == 774) // TODO Minior not handled yet
         return "";
@@ -675,6 +681,10 @@ function GetFormText(pokemon_id, form) {
             return "Alolan Form";
         case "Paldea":
             return "Paldean Form";
+        case "Exclamation_point":
+            return "!";
+        case "Question_mark":
+            return "?";
         case "Plant":
         case "Sandy":
         case "Trash":
