@@ -263,6 +263,25 @@ button:focus {
     font-weight: bold;
 }
 
+#announcement-c {
+    position: relative;
+    width: 0;
+    height: 0;
+    z-index: 2;
+    margin: 0 auto;
+}
+
+#announcement {
+    position: absolute;
+    width: 500px;
+    transform: translate(-250px, -90px);
+    text-align: center;
+}
+
+#announcement p {
+    margin: 0;
+}
+
 #note {
     position: fixed;
     width: 250px;
