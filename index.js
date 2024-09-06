@@ -52,6 +52,7 @@ METRICS.add("ER");
 METRICS.add("EER");
 METRICS.add("TER");
 let settings_metric = "EER";
+let settings_raid_system = "new";
 let settings_default_level = 40;
 
 // global variables
@@ -113,6 +114,8 @@ function Main() {
     $("#metric-er").click(function() { SetMetric("ER"); });
     $("#metric-eer").click(function() { SetMetric("EER"); });
     $("#metric-ter").click(function() { SetMetric("TER"); });
+    $("#raid-system-old").click(function() { SetRaidSystem("old"); });
+    $("#raid-system-new").click(function() { SetRaidSystem("new"); });
     $("#lvl-40").click(function() { SetDefaultLevel(40); });
     $("#lvl-50").click(function() { SetDefaultLevel(50); });
 
@@ -262,6 +265,33 @@ function SetMetric(metric) {
     // sets pokemongo table header
     $("#table-metric-header").html(settings_metric);
     $("#table-metric-header-sh").html(settings_metric + "<br>(Shadow)");
+
+    // reload page
+    CheckURLAndAct();
+}
+
+/**
+ * Sets the raid system setting and, if necessary, updates the page accordingly.
+ */
+function SetRaidSystem(raid_system) {
+
+    if (raid_system != "old" && raid_system != "new")
+        return;
+
+    // sets global variable
+    settings_raid_system = raid_system;
+
+    // sets settings options selected class
+    $("#raid-system-old").removeClass("settings-opt-sel");
+    $("#raid-system-new").removeClass("settings-opt-sel");
+    switch (raid_system) {
+        case "old":
+            $("#raid-system-old").addClass("settings-opt-sel");
+            break;
+        case "new":
+            $("#raid-system-new").addClass("settings-opt-sel");
+            break;
+    }
 
     // reload page
     CheckURLAndAct();
@@ -1906,19 +1936,20 @@ function GetDPS(types, atk, def, hp, fm_obj, cm_obj, fm_mult = 1, cm_mult = 1,
     const fm_dmg_mult = fm_mult
         * ((types.includes(fm_obj.type) && fm_obj.name != "Hidden Power") ? 1.2 : 1);
     const fm_dmg = 0.5 * fm_obj.power * (atk / enemy_def) * fm_dmg_mult + 0.5;
-    const fm_dps = fm_dmg / (fm_obj.duration / 1000);
-    const fm_eps = fm_obj.energy_delta / (fm_obj.duration / 1000);
+    const fm_dps = fm_dmg / ProcessDuration(fm_obj.duration);
+    const fm_eps = fm_obj.energy_delta / ProcessDuration(fm_obj.duration);
 
     // charged move variables
     const cm_dmg_mult = cm_mult * ((types.includes(cm_obj.type)) ? 1.2 : 1);
     const cm_dmg = 0.5 * cm_obj.power * (atk / enemy_def) * cm_dmg_mult + 0.5;
-    const cm_dps = cm_dmg / (cm_obj.duration / 1000);
-    let cm_eps = -cm_obj.energy_delta / (cm_obj.duration / 1000);
+    const cm_dps = cm_dmg / ProcessDuration(cm_obj.duration);
+    let cm_eps = -cm_obj.energy_delta / ProcessDuration(cm_obj.duration);
     // penalty to one-bar charged moves (they use more energy (cm_eps))
+    // TODO is this relevant in the new raid system?
     if (cm_obj.energy_delta == -100) {
         const dws = cm_obj.damage_window_start / 1000; // dws in seconds
         cm_eps = (-cm_obj.energy_delta + 0.5 * fm_obj.energy_delta
-                + 0.5 * y * dws) / (cm_obj.duration / 1000);
+                + 0.5 * y * dws) / ProcessDuration(cm_obj.duration);
     }
 
     // simple cycle DPS
@@ -1975,13 +2006,27 @@ function GetSpecificY(types, atk, fm_obj, cm_obj, fm_mult = 1, cm_mult = 1,
     // this isn't part of the formula
     // this multiplier attempts to tweak the specified y
     // to match the default (900 / def)
-    const y_mult = 200;
+    const y_mult = 0.5;
 
     // specific y
     const y = y_mult * (lambda * fm_dmg + cm_dmg)
-        / (lambda * (fm_obj.duration + 2) + cm_obj.duration + 2);
+        / (lambda * (ProcessDuration(fm_obj.duration) + 2) + ProcessDuration(cm_obj.duration) + 2);
 
     return ((y < 0) ? 0 : y);
+}
+
+/**
+ * Processes the duration of fast moves and charged moves.
+ * The input is in milliseconds and the output is in seconds.
+ * The output differs according to 'settings_raid_system'.
+ * 
+ * https://www.reddit.com/r/TheSilphRoad/comments/1f4wqw8/analysis_everything_you_thought_you_knew_about/
+ */
+function ProcessDuration(duration) {
+
+    if (settings_raid_system == "new")
+        return (Math.round((duration / 1000) * 2) / 2);
+    return (duration / 1000);
 }
 
 /**
