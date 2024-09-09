@@ -1944,9 +1944,8 @@ function GetDPS(types, atk, def, hp, fm_obj, cm_obj, fm_mult = 1, cm_mult = 1,
     const cm_dmg = 0.5 * cm_obj.power * (atk / enemy_def) * cm_dmg_mult + 0.5;
     const cm_dps = cm_dmg / ProcessDuration(cm_obj.duration);
     let cm_eps = -cm_obj.energy_delta / ProcessDuration(cm_obj.duration);
-    // penalty to one-bar charged moves (they use more energy (cm_eps))
-    // TODO is this relevant in the new raid system?
-    if (cm_obj.energy_delta == -100) {
+    // penalty to one-bar charged moves in old raid system (they use more energy (cm_eps))
+    if (settings_raid_system == "old" && cm_obj.energy_delta == -100) {
         const dws = cm_obj.damage_window_start / 1000; // dws in seconds
         cm_eps = (-cm_obj.energy_delta + 0.5 * fm_obj.energy_delta
                 + 0.5 * y * dws) / ProcessDuration(cm_obj.duration);
